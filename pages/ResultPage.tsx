@@ -14,38 +14,25 @@ const ResultPage: React.FC<ResultPageProps> = ({ submissions, exams }) => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // High-res data finding strategy
   const submission = useMemo(() => {
-    // 1. Direct location state (most accurate/fastest)
     const fromState = location.state?.submission as Submission | undefined;
     if (fromState && fromState.id === id) return fromState;
-    
-    // 2. Props (global state)
     const fromProps = submissions.find(s => s.id === id);
     if (fromProps) return fromProps;
-    
-    // 3. Rescue logic: Emergency localStorage bridge
     try {
       const rescuedRaw = localStorage.getItem('exampro_last_submission');
       if (rescuedRaw) {
         const rescued = JSON.parse(rescuedRaw) as Submission;
         if (rescued.id === id) return rescued;
       }
-    } catch (e) {
-      console.warn("Rescue logic failed", e);
-    }
-    
+    } catch (e) {}
     return undefined;
   }, [id, submissions, location.state]);
 
   const exam = useMemo(() => {
     if (!submission) return undefined;
-    
-    // Try to get exam from direct state
     const fromState = location.state?.exam as Exam | undefined;
     if (fromState && fromState.id === submission.examId) return fromState;
-    
-    // Fallback to searching in prop exams
     return exams.find(e => e.id === submission.examId);
   }, [exams, submission, location.state]);
 
@@ -66,21 +53,6 @@ const ResultPage: React.FC<ResultPageProps> = ({ submissions, exams }) => {
     <div className="max-w-3xl mx-auto py-24 text-center space-y-6 animate-pulse">
       <div className="w-20 h-20 border-4 border-slate-100 border-t-slate-900 rounded-full animate-spin mx-auto"></div>
       <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Syncing Result Ledger...</h2>
-      <p className="text-slate-400 font-medium max-w-sm mx-auto">Connecting to verification server. This may take a moment if your network is slow.</p>
-      <div className="pt-8 flex justify-center gap-4">
-        <button 
-          onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-slate-900 text-white rounded-xl font-bold text-sm"
-        >
-          Retry Sync
-        </button>
-        <button 
-          onClick={() => navigate('/dashboard')}
-          className="px-6 py-2 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold text-sm"
-        >
-          Cancel
-        </button>
-      </div>
     </div>
   );
 
@@ -114,9 +86,9 @@ const ResultPage: React.FC<ResultPageProps> = ({ submissions, exams }) => {
              <div className="w-px h-16 bg-slate-100 hidden md:block"></div>
 
              <div className="text-center">
-               <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-3">Yield Rate</p>
-               <div className={`text-5xl font-black tracking-tighter ${passed ? 'text-amber-500' : 'text-rose-500'}`}>
-                 {submission.percentage}%
+               <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-3">Integrity Log</p>
+               <div className={`text-5xl font-black tracking-tighter ${submission.integrityViolations === 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                 {submission.integrityViolations} <span className="text-lg text-slate-200 font-medium">Violations</span>
                </div>
              </div>
 
@@ -143,16 +115,10 @@ const ResultPage: React.FC<ResultPageProps> = ({ submissions, exams }) => {
            </div>
 
            <div className="flex flex-col sm:flex-row gap-6">
-             <Link 
-               to={`/review/${submission.id}`}
-               className="flex-1 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] text-center hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
-             >
+             <Link to={`/review/${submission.id}`} className="flex-1 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] text-center hover:bg-slate-800 transition-all shadow-xl">
                Detailed Review
              </Link>
-             <Link 
-               to="/dashboard"
-               className="flex-1 py-5 bg-white text-slate-500 border border-slate-100 rounded-2xl font-bold text-center hover:text-slate-900 hover:border-slate-300 transition-all"
-             >
+             <Link to="/dashboard" className="flex-1 py-5 bg-white text-slate-500 border border-slate-200 rounded-2xl font-bold text-center hover:text-slate-900 transition-all">
                Return Home
              </Link>
            </div>

@@ -20,6 +20,7 @@
         font-family: 'Outfit', sans-serif;
         background-color: var(--brand-bg);
         color: var(--brand-primary);
+        overflow-x: hidden;
       }
       h1, h2, h3, .font-syne {
         font-family: 'Syne', sans-serif;
@@ -45,14 +46,13 @@
       .animate-fade-in-up {
         animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
-      .stagger-1 { animation-delay: 0.1s; }
-      .stagger-2 { animation-delay: 0.2s; }
-      .stagger-3 { animation-delay: 0.3s; }
-      
       .glass-card {
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .proctor-feed {
+        mask-image: radial-gradient(circle, black 50%, rgba(0,0,0,0.5) 100%);
       }
     </style>
     <script type="importmap">
@@ -70,6 +70,7 @@
 </head>
 <body>
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>

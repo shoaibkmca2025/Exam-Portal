@@ -36,11 +36,12 @@ export interface Submission {
   id: string;
   userId: string;
   examId: string;
-  answers: Record<string, number | number[]>; // questionId -> selectedOptionIndex or array of indices
+  answers: Record<string, number | number[]>;
   score: number;
   percentage: number;
   status: 'passed' | 'failed';
   submittedAt: string;
+  integrityViolations?: number;
 }
 
 export interface AppState {
