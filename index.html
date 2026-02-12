@@ -3,16 +3,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ExamPro | Excellence Reimagined</title>
+    
+    <!-- PWA / Mobile Meta Tags -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ExamPro">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
+    <link rel="manifest" href="./manifest.json">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Configure Tailwind to use 'class' for dark mode
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              outfit: ['Outfit', 'sans-serif'],
+              syne: ['Syne', 'sans-serif'],
+            },
+          },
+        },
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
       // Critical: Polyfill process.env before any module scripts execute.
-      // This allows client-side code to access process.env.API_KEY as expected by the SDK.
       window.process = window.process || { env: {} };
     </script>
 <script type="importmap">

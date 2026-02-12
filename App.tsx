@@ -17,10 +17,29 @@ import CreateExam from './pages/CreateExam';
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>(loadData());
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
 
   useEffect(() => {
     saveData(state);
   }, [state]);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  }, []);
 
   const login = useCallback((user: User) => {
     setState(prev => ({ ...prev, currentUser: user }));
@@ -44,9 +63,9 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
-        <Navbar user={state.currentUser} onLogout={logout} />
-        <main className="flex-grow container mx-auto px-4 py-8">
+      <div className="min-h-screen flex flex-col bg-[#fdfdfb] dark:bg-[#020617] transition-colors duration-300">
+        <Navbar user={state.currentUser} onLogout={logout} theme={theme} onToggleTheme={toggleTheme} />
+        <main className="flex-grow content-container py-6 md:py-12">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route 
