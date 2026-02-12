@@ -2,13 +2,23 @@
 import { GoogleGenAI } from "@google/genai";
 import { Question, Submission, Exam } from "./types";
 
-// Always use the required initialization format with process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+/**
+ * Utility to obtain a fresh Gemini AI client instance.
+ * Lazily evaluating this within functions ensures process.env.API_KEY
+ * is always correctly retrieved from the global environment.
+ */
+const getAiClient = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("Gemini API Key is not detected in process.env.API_KEY.");
+  }
+  return new GoogleGenAI({ apiKey: apiKey || '' });
+};
 
 export const getAIExplanation = async (question: string, options: string[], correctAnswer: string) => {
   try {
-    // Fix: Removed maxOutputTokens to prevent potential response truncation as per guidelines.
-    // Using ai.models.generateContent directly with model name and prompt.
+    const ai = getAiClient();
+    // Using gemini-3-flash-preview for high-performance MCQ explanations
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Provide a clear, concise educational explanation for the following MCQ question. 
@@ -16,7 +26,6 @@ export const getAIExplanation = async (question: string, options: string[], corr
       Options: ${options.join(', ')}
       Correct Answer: ${correctAnswer}`,
     });
-    // Directly access the .text property of GenerateContentResponse
     return response.text || "No explanation generated.";
   } catch (error) {
     console.error("Gemini Error:", error);
@@ -26,6 +35,7 @@ export const getAIExplanation = async (question: string, options: string[], corr
 
 export const getPerformanceInsights = async (exam: Exam, submission: Submission) => {
   try {
+    const ai = getAiClient();
     const prompt = `Analyze this student's exam performance:
     Exam: ${exam.title}
     Score: ${submission.score}/${exam.totalMarks} (${submission.percentage}%)
@@ -33,14 +43,13 @@ export const getPerformanceInsights = async (exam: Exam, submission: Submission)
     Number of Questions: ${exam.questions.length}
     Provide 3 bullet points: 1 Strength, 1 Weakness, and 1 Growth Suggestion.`;
 
-    // Fix: Removed maxOutputTokens to allow the model to provide complete and detailed insights.
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
     });
-    // Directly access the .text property of GenerateContentResponse
     return response.text || "Keep studying to improve your results!";
   } catch (error) {
+    console.error("Gemini Insight Error:", error);
     return "Complete the review to see your areas of improvement.";
   }
 };
