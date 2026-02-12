@@ -1,0 +1,7 @@
+{
+  "name": "ExamPro - Advanced Online Examination System",
+  "description": "A comprehensive online examination platform featuring real-time timers, automated results, administrative dashboards, and AI-powered performance insights.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
